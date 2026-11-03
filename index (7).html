@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d62828">
+<meta name="description" content="Ceylon Crust Pizza Business Manager">
+<title>Ceylon Crust Pizza | Business Manager</title>
+<style>
+:root{
+  --red:#d62828;--red-dark:#b91f24;--orange:#f4a623;--yellow:#ffd166;
+  --ink:#242124;--muted:#77727a;--paper:#fff;--bg:#fff7f1;
+  --line:#f0e5df;--green:#238b57;--blue:#3978c6;--shadow:0 12px 35px rgba(75,35,20,.08);
+  --radius:18px
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.app{min-height:100vh;display:flex}
+.sidebar{width:258px;flex:0 0 258px;background:linear-gradient(180deg,#c91f2a 0%,#a81722 100%);color:#fff;padding:24px 16px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;z-index:10;box-shadow:8px 0 30px rgba(128,25,30,.12)}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 10px 28px;border-bottom:1px solid rgba(255,255,255,.2)}
+.brand-icon{width:58px;height:58px;flex:0 0 58px;border-radius:14px;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 6px 18px #76131c55}.brand-icon img{width:100%;height:100%;object-fit:contain}
+.brand h1{font-size:15px;letter-spacing:1px;margin:0;font-weight:900}.brand small{display:block;font-size:10px;letter-spacing:2px;margin-top:5px;color:#ffe3d1;font-weight:700}
+.menu-label{font-size:10px;font-weight:800;letter-spacing:1.7px;color:#ffd6c5;padding:26px 12px 10px}
+.nav{display:grid;gap:7px}
+.nav button{border:0;color:#ffe9e1;background:transparent;border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:13px;text-align:left;font-weight:650;font-size:13px;transition:.2s}
+.nav button .ico{width:22px;text-align:center;font-size:17px}
+.nav button:hover,.nav button.active{background:#fff;color:var(--red);box-shadow:0 7px 18px rgba(80,0,0,.13)}
+.sidebar-bottom{margin-top:auto}
+.sidebar-note{font-size:10px;color:#ffd9cd;line-height:1.6;padding:18px 12px 0}
+.main{margin-left:258px;width:calc(100% - 258px);min-width:0}
+.topbar{height:82px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;position:sticky;top:0;z-index:5}
+.topbar h2{font-size:19px;margin:0;font-weight:850}.topbar p{font-size:11px;color:var(--muted);margin:5px 0 0}
+.top-right{display:flex;align-items:center;gap:12px;color:#665e5c;font-size:12px;font-weight:650}
+.live-dot{width:9px;height:9px;border-radius:50%;background:#27b36a;box-shadow:0 0 0 4px #e3f7eb}
+.avatar{width:38px;height:38px;border-radius:13px;background:#fff0d8;color:#a65b00;display:grid;place-items:center;font-weight:900}
+.content{max-width:1450px;margin:0 auto;padding:30px 34px 55px}
+.page{display:none}.page.active{display:block}
+.welcome{background:linear-gradient(110deg,#d62828 0%,#ed5637 58%,#f4a623 100%);border-radius:23px;padding:28px 30px;color:white;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:0 15px 30px rgba(214,40,40,.18);margin-bottom:24px;position:relative;overflow:hidden}
+.welcome:after{content:"🍕";position:absolute;right:23%;font-size:100px;opacity:.12;transform:rotate(-18deg)}
+.welcome h1{font-size:25px;margin:0 0 8px;font-weight:900}.welcome p{margin:0;color:#ffe8dc;font-size:13px}
+.welcome .btn{z-index:1;background:#fff;color:var(--red);box-shadow:0 6px 16px #7d161633}
+.btn{border:0;border-radius:11px;padding:11px 16px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.btn:hover{transform:translateY(-1px);filter:brightness(.98)}
+.btn-red{background:var(--red);color:#fff;box-shadow:0 6px 14px #d6282822}
+.btn-orange{background:#fff0d2;color:#995500}.btn-light{background:#fff;border:1px solid var(--line);color:#51494a}
+.btn-green{background:#e4f7ed;color:#197446}.btn-danger{background:#ffeded;color:#bd2525}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin-bottom:23px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:17px;padding:19px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.stat:after{content:"";position:absolute;width:85px;height:85px;border-radius:50%;right:-28px;top:-30px;background:var(--tint)}
+.stat-top{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.stat-icon{width:40px;height:40px;border-radius:13px;background:var(--tint);display:grid;place-items:center;font-size:19px}
+.stat-label{font-size:11px;color:var(--muted);font-weight:750;margin:14px 0 6px}
+.stat-value{font-size:23px;font-weight:900;letter-spacing:-.6px;margin:0;position:relative;z-index:1}
+.stat-sub{font-size:10px;color:#9a9290;margin-top:6px}
+.grid-two{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.85fr);gap:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:21px;box-shadow:var(--shadow);min-width:0}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+.card-head h3{margin:0;font-size:15px;font-weight:850}.muted{color:var(--muted);font-size:11px}
+.quick-list{display:grid;gap:10px}
+.quick{border:1px solid var(--line);background:#fffaf6;border-radius:13px;padding:13px;display:flex;align-items:center;gap:12px;text-align:left;width:100%}
+.quick:hover{border-color:#f2b6a8;background:#fff4ed}
+.quick .qico{width:39px;height:39px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:#ffe6dd;color:var(--red)}
+.quick strong{display:block;font-size:12px}.quick small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.page-title{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:22px}
+.page-title h1{font-size:23px;margin:0 0 6px;font-weight:900}.page-title p{font-size:12px;color:var(--muted);margin:0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;font-weight:800;color:#554d4b}
+.field input,.field select,.field textarea,.search{width:100%;border:1px solid #eaded8;border-radius:10px;padding:11px 12px;background:#fffdfa;outline:none;color:var(--ink);font-size:12px}
+.field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:#e27b68;box-shadow:0 0 0 3px #d6282810}
+.field textarea{min-height:75px;resize:vertical}
+.section-label{font-size:13px;font-weight:900;margin:4px 0 15px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:13px}
+table{width:100%;border-collapse:collapse;min-width:580px}
+th{text-align:left;background:#fff7f1;color:#766c68;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:12px}
+td{padding:13px 12px;border-top:1px solid #f4ece7;font-size:11px;vertical-align:middle}
+.empty{text-align:center;padding:34px 15px;color:var(--muted)}
+.empty .empty-icon{font-size:31px;margin-bottom:9px}.empty strong{display:block;color:#49413f;font-size:13px;margin-bottom:5px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;flex-wrap:wrap}
+.toolbar .search{max-width:290px}
+.items-table{min-width:650px}
+.items-table input,.items-table select{width:100%;border:1px solid #eaded8;border-radius:8px;padding:9px;font-size:11px}
+.items-table .remove-row{border:0;background:#ffeded;color:#c22;border-radius:8px;padding:7px 9px}
+.invoice-totals{margin:18px 0 0 auto;max-width:340px;display:grid;gap:10px}
+.total-line{display:flex;justify-content:space-between;font-size:12px;color:#665d5a}.total-line.grand{border-top:1px solid var(--line);padding-top:12px;font-size:17px;font-weight:900;color:var(--red)}
+.badge{display:inline-block;padding:5px 9px;border-radius:30px;font-size:10px;font-weight:800}
+.badge.paid{background:#e3f7eb;color:#197446}.badge.partial{background:#fff2d8;color:#986000}.badge.unpaid{background:#ffebeb;color:#bd2525}
+.action-row{display:flex;gap:7px;flex-wrap:wrap}
+.product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.product-card{border:1px solid var(--line);border-radius:15px;padding:16px;background:linear-gradient(145deg,#fff,#fff8f1)}
+.product-card .pizza-emoji{font-size:27px}.product-card h3{font-size:13px;margin:9px 0 5px}.product-card p{font-size:10px;color:var(--muted);margin:0 0 12px}.product-card strong{color:var(--red);font-size:15px}
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.report-box{border-radius:15px;padding:19px;background:#fff2e5;border:1px solid #ffe0c2}.report-box:nth-child(2){background:#ffeded;border-color:#ffd0d0}.report-box:nth-child(3){background:#eaf7ef;border-color:#d0edda}
+.report-box span{font-size:11px;color:#6f625d}.report-box strong{display:block;font-size:22px;margin-top:8px}
+.login-screen{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 20%,#ffcf8c 0,transparent 28%),linear-gradient(135deg,#b91f24,#e94832 58%,#f4a623)}
+.login-card{width:min(420px,100%);background:#fff;border-radius:24px;padding:35px;box-shadow:0 25px 70px #64101855;text-align:center}
+.login-logo{width:150px;height:110px;background:#fff;border-radius:18px;display:grid;place-items:center;overflow:hidden;margin:0 auto 17px;padding:5px}.login-logo img{width:100%;height:100%;object-fit:contain}
+.login-card h1{font-size:23px;letter-spacing:1.2px;margin:0;color:#242124}.login-card h2{font-size:13px;letter-spacing:5px;color:var(--red);margin:5px 0 9px}.login-card>p{font-size:12px;color:var(--muted);margin:0 0 25px}
+.login-card .field{text-align:left;margin-bottom:14px}.login-card .btn{width:100%;padding:13px}
+.login-error{color:var(--red);font-size:11px;min-height:16px;margin:10px 0 0}
+.login-foot{font-size:9px;color:#aaa;margin-top:24px;letter-spacing:1px}
+.notice{border:1px solid #ffe0a6;background:#fff8e8;border-radius:11px;padding:11px 13px;font-size:11px;color:#77551c;line-height:1.5;margin-bottom:16px}
+.toast{position:fixed;right:22px;bottom:22px;background:#242124;color:#fff;padding:13px 17px;border-radius:12px;font-size:12px;box-shadow:var(--shadow);z-index:30;opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.mobile-menu{display:none}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:780px){
+ .sidebar{width:78px;padding:18px 9px}.brand{justify-content:center;padding:4px 0 20px}.brand>div:last-child,.menu-label,.nav button .nav-text,.sidebar-note{display:none}
+ .brand-icon{width:48px;height:48px}.nav button{justify-content:center;padding:13px 8px}.nav button .ico{font-size:19px;width:auto}
+ .main{margin-left:78px;width:calc(100% - 78px)}.topbar{padding:0 18px}.content{padding:22px 18px 40px}
+ .grid-two{grid-template-columns:1fr}.welcome{padding:22px;align-items:flex-start;flex-direction:column}.welcome:after{right:8%;top:20px}
+}
+@media(max-width:540px){
+ .topbar{height:70px}.topbar h2{font-size:16px}.top-right>span,.live-dot{display:none}
+ .stats{grid-template-columns:1fr 1fr;gap:10px}.stat{padding:14px}.stat-value{font-size:18px}.stat-label{font-size:10px}
+ .welcome h1{font-size:21px}.welcome p{font-size:11px}.page-title{flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
+ .product-grid,.report-grid{grid-template-columns:1fr}.card{padding:16px}.content{padding:17px 12px 32px}
+}
+@media print{
+ body{background:#fff}.sidebar,.topbar,.no-print,.toast{display:none!important}.main{margin:0;width:100%}.content{padding:0;max-width:none}.page{display:none!important}#invoice-print-view{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><img src="logo.png" alt="Ceylon Crust Pizza logo"></div>
+    <h1>CEYLON CRUST</h1><h2>PIZZA</h2>
+    <p>Business Management System</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="passwordInput">Worker password</label>
+        <input id="passwordInput" type="password" placeholder="Enter password" required autocomplete="current-password">
+      </div>
+      <button class="btn btn-red" type="submit">LOGIN&nbsp; →</button>
+      <div id="loginError" class="login-error"></div>
+    </form>
+    <div class="login-foot">CEYLON CRUST PIZZA · BUSINESS MANAGER</div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon"><img src="logo.png" alt="Ceylon Crust Pizza logo"></div>
+      <div><h1>CEYLON CRUST</h1><small>PIZZA MANAGER</small></div>
+    </div>
+    <div class="menu-label">MAIN MENU</div>
+    <nav class="nav">
+      <button class="active" data-page="dashboard"><span class="ico">▦</span><span class="nav-text">Dashboard</span></button>
+      <button data-page="create-invoice"><span class="ico">＋</span><span class="nav-text">Create Invoice</span></button>
+      <button data-page="invoices"><span class="ico">▤</span><span class="nav-text">All Invoices</span></button>
+      <button data-page="customers"><span class="ico">♙</span><span class="nav-text">Customers</span></button>
+      <button data-page="products"><span class="ico">🍕</span><span class="nav-text">Pizza & Pricing</span></button>
+      <button data-page="reports"><span class="ico">▥</span><span class="nav-text">Sales Reports</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="menu-label">PREFERENCES</div>
+      <nav class="nav">
+        <button data-page="settings"><span class="ico">⚙</span><span class="nav-text">Settings</span></button>
+        <button id="logoutButton"><span class="ico">↪</span><span class="nav-text">Logout</span></button>
+      </nav>
+      <div class="sidebar-note">Freshly managed.<br>Made for Ceylon Crust Pizza.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h2 id="pageTitle">Dashboard</h2><p id="currentDate"></p></div>
+      <div class="top-right"><span class="live-dot"></span><span>Business Manager</span><div class="avatar">CC</div></div>
+    </header>
+    <div class="content">
+
+      <section id="dashboard" class="page active">
+        <div class="welcome">
+          <div><h1>Welcome Back! 👋</h1><p>Here's what's happening with your pizza business today.</p></div>
+          <button class="btn" onclick="go('create-invoice')">＋ Create Invoice</button>
+        </div>
+        <div class="stats">
+          <div class="stat" style="--tint:#ffe4df"><div class="stat-top"><span class="stat-icon">🧾</span><span class="muted">TODAY</span></div><div class="stat-label">Today's Orders</div><h3 class="stat-value" id="todayOrders">0</h3><div class="stat-sub">Orders created today</div></div>
+          <div class="stat" style="--tint:#fff0d0"><div class="stat-top"><span class="stat-icon">💰</span><span class="muted">AED</span></div><div class="stat-label">Today's Sales</div><h3 class="stat-value" id="todaySales">AED 0.00</h3><div class="stat-sub">Total invoiced today</div></div>
+          <div class="stat" style="--tint:#e4f5e9"><div class="stat-top"><span class="stat-icon">📋</span><span class="muted">ALL TIME</span></div><div class="stat-label">Total Invoices</div><h3 class="stat-value" id="totalInvoices">0</h3><div class="stat-sub">All recorded invoices</div></div>
+          <div class="stat" style="--tint:#e7efff"><div class="stat-top"><span class="stat-icon">⏳</span><span class="muted">DUE</span></div><div class="stat-label">Pending Payments</div><h3 class="stat-value" id="pendingPayments">AED 0.00</h3><div class="stat-sub">Outstanding balance</div></div>
+        </div>
+        <div class="grid-two">
+          <div class="card"><div class="card-head"><h3>Recent Invoices</h3><button class="btn btn-light" onclick="go('invoices')">View all →</button></div><div id="recentInvoices"></div></div>
+          <div class="card"><div class="card-head"><h3>Quick Actions</h3><span>⚡</span></div>
+            <div class="quick-list">
+              <button class="quick" onclick="go('create-invoice')"><span class="qico">＋</span><span><strong>Create Invoice</strong><small>Create a new customer order</small></span></button>
+              <button class="quick" onclick="go('customers')"><span class="qico" style="background:#fff1d9;color:#a96500">♙</span><span><strong>Customers</strong><small>View individual and shop customers</small></span></button>
+              <button class="quick" onclick="go('products')"><span class="qico" style="background:#e7f5eb;color:#25804b">🍕</span><span><strong>Pizza & Pricing</strong><small>Manage flavours and prices</small></span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="create-invoice" class="page">
+        <div class="page-title"><div><h1>Create Invoice 🧾</h1><p>Enter the order details and add one or more pizza flavours.</p></div></div>
+        <div class="notice">This first version saves records in this browser only. It does not yet synchronise between devices. Avoid entering sensitive customer information until secure sign-in and cloud storage are configured.</div>
+        <form id="invoiceForm">
+          <div class="card" style="margin-bottom:17px">
+            <div class="section-label">01 · Customer & order details</div>
+            <div class="form-grid">
+              <div class="field"><label for="customerType">Customer type</label><select id="customerType"><option value="Individual">Individual</option><option value="Shop">Shop / Wholesale</option></select></div>
+              <div class="field"><label for="customerName">Customer / shop name *</label><input id="customerName" required placeholder="Enter customer name"></div>
+              <div class="field"><label for="customerPhone">Phone (optional)</label><input id="customerPhone" type="tel" placeholder="Phone number"></div>
+              <div class="field"><label for="customerEmail">Email (optional)</label><input id="customerEmail" type="email" placeholder="Email address"></div>
+              <div class="field"><label for="invoiceDate">Invoice date</label><input id="invoiceDate" type="date" required></div>
+              <div class="field"><label for="orderDate">Order / delivery date</label><input id="orderDate" type="date" required></div>
+              <div class="field"><label for="paymentMethod">Payment method</label><select id="paymentMethod"><option>Cash</option><option>Card</option><option>Bank transfer</option><option>Online payment</option><option>Other</option></select></div>
+              <div class="field"><label for="amountPaid">Amount paid (AED)</label><input id="amountPaid" type="number" min="0" step="0.01" value="0"></div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:17px">
+            <div class="card-head"><div><div class="section-label" style="margin:0 0 4px">02 · Pizza order</div><span class="muted">Choose a flavour, quantity and price.</span></div><button type="button" class="btn btn-orange" id="addItem">＋ Add pizza</button></div>
+            <div class="table-wrap"><table class="items-table"><thead><tr><th style="width:34%">Pizza flavour</th><th>Quantity</th><th>Unit price (AED)</th><th>Line total</th><th></th></tr></thead><tbody id="invoiceItems"></tbody></table></div>
+            <div class="invoice-totals">
+              <div class="total-line"><span>Subtotal</span><strong id="subtotal">AED 0.00</strong></div>
+              <div class="field"><label for="discount">Discount (AED)</label><input id="discount" type="number" min="0" step="0.01" value="0"></div>
+              <div class="total-line grand"><span>Grand total</span><strong id="grandTotal">AED 0.00</strong></div>
+              <div class="total-line"><span>Amount paid</span><strong id="paidDisplay">AED 0.00</strong></div>
+              <div class="total-line"><span>Balance due</span><strong id="balance">AED 0.00</strong></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="field"><label for="invoiceNotes">Order notes (optional)</label><textarea id="invoiceNotes" placeholder="Special instructions..."></textarea></div>
+            <div class="action-row" style="margin-top:18px"><button class="btn btn-red" type="submit">Save Invoice</button><button class="btn btn-light" type="reset" id="resetInvoice">Clear form</button></div>
+          </div>
+        </form>
+      </section>
+
+      <section id="invoices" class="page">
+        <div class="page-title"><div><h1>All Invoices 📋</h1><p>Search, review, print and manage saved invoices.</p></div><button class="btn btn-red" onclick="go('create-invoice')">＋ New invoice</button></div>
+        <div class="card"><div class="toolbar"><input id="invoiceSearch" class="search" placeholder="Search invoice or customer..."><span class="muted" id="invoiceCount">0 invoices</span></div><div id="invoiceTable"></div></div>
+      </section>
+
+      <section id="customers" class="page">
+        <div class="page-title"><div><h1>Customers ♙</h1><p>Customer details are collected from saved invoices.</p></div></div>
+        <div class="card"><div class="toolbar"><input id="customerSearch" class="search" placeholder="Search customers..."><span class="muted" id="customerCount">0 customers</span></div><div id="customerTable"></div></div>
+      </section>
+
+      <section id="products" class="page">
+        <div class="page-title"><div><h1>Pizza & Pricing 🍕</h1><p>Add your pizza flavours and set the default selling prices.</p></div><button class="btn btn-red" id="addProductButton">＋ Add pizza</button></div>
+        <div class="notice">Set the default prices here. You can still adjust the unit price for an individual invoice.</div>
+        <div id="productGrid" class="product-grid"></div>
+      </section>
+
+      <section id="reports" class="page">
+        <div class="page-title"><div><h1>Sales Reports 📊</h1><p>A quick summary based on invoices saved in this browser.</p></div><button class="btn btn-light" id="exportCsv">↓ Export CSV</button></div>
+        <div class="report-grid">
+          <div class="report-box"><span>Total invoiced</span><strong id="reportSales">AED 0.00</strong></div>
+          <div class="report-box"><span>Total collected</span><strong id="reportPaid">AED 0.00</strong></div>
+          <div class="report-box"><span>Outstanding balance</span><strong id="reportDue">AED 0.00</strong></div>
+        </div>
+        <div class="card" style="margin-top:18px"><div class="card-head"><h3>Invoice summary</h3></div><div id="reportSummary" class="muted">No invoices yet.</div></div>
+      </section>
+
+      <section id="settings" class="page">
+        <div class="page-title"><div><h1>Settings ⚙</h1><p>Business details and local data backup.</p></div></div>
+        <div class="card" style="margin-bottom:17px">
+          <div class="section-label">Business information</div>
+          <div class="form-grid">
+            <div class="field"><label>Business name</label><input value="Ceylon Crust Pizza" readonly></div>
+            <div class="field"><label>Currency</label><input value="AED – UAE Dirham" readonly></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-label">Data backup</div>
+          <p class="muted">Download a backup of invoices and pizza prices stored in this browser. Keep the file somewhere safe.</p>
+          <div class="action-row"><button class="btn btn-red" id="backupButton">↓ Download backup</button><label class="btn btn-light" for="restoreFile">↑ Restore backup</label><input id="restoreFile" type="file" accept="application/json" class="hidden"></div>
+          <p class="muted" style="margin-top:15px">This is browser storage only. Clearing browser data may remove your records. Cloud sync and secure staff accounts are not connected yet.</p>
+        </div>
+      </section>
+
+      <section id="invoice-print-view" class="page"></section>
+    </div>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+  const PASSWORD = "2009"; // Temporary demo password only. Not secure authentication.
+  const KEYS = {invoices:"ccp_invoices_v1", products:"ccp_products_v1"};
+  const defaultProducts = [
+    {id:"p1",name:"Classic Margherita",price:25},
+    {id:"p2",name:"Chicken Tikka",price:32},
+    {id:"p3",name:"BBQ Chicken",price:34},
+    {id:"p4",name:"Spicy Chicken",price:33},
+    {id:"p5",name:"Chicken Sausage",price:32},
+    {id:"p6",name:"Veggie Delight",price:29}
+  ];
+  let invoices = read(KEYS.invoices,[]);
+  let products = read(KEYS.products,defaultProducts);
+  let toastTimer;
+  const $ = id => document.getElementById(id);
+  const money = n => "AED " + Number(n||0).toFixed(2);
+  const today = () => {
+    const d = new Date();
+    return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  };
+  function read(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch{return fallback}}
+  function save(){localStorage.setItem(KEYS.invoices,JSON.stringify(invoices));localStorage.setItem(KEYS.products,JSON.stringify(products))}
+  function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+  function notify(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2600)}
+  function go(page){
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    const target=$(page);if(target)target.classList.add("active");
+    document.querySelectorAll(".nav button[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+    const names={"dashboard":"Dashboard","create-invoice":"Create Invoice","invoices":"All Invoices","customers":"Customers","products":"Pizza & Pricing","reports":"Sales Reports","settings":"Settings"};
+    $("pageTitle").textContent=names[page]||"Dashboard";
+    if(page==="dashboard")renderDashboard();
+    if(page==="invoices")renderInvoices();
+    if(page==="customers")renderCustomers();
+    if(page==="products")renderProducts();
+    if(page==="reports")renderReports();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  window.go=go;
+  $("loginForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    if($("passwordInput").value===PASSWORD){
+      $("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");
+      $("loginError").textContent="";$("passwordInput").value="";
+      $("currentDate").textContent=new Date().toLocaleDateString("en-AE",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+      renderDashboard();notify("Welcome to Ceylon Crust Pizza!");
+    }else{$("loginError").textContent="Incorrect password. Please try again.";$("passwordInput").value="";$("passwordInput").focus()}
+  });
+  $("logoutButton").addEventListener("click",()=>{if(confirm("Are you sure you want to logout?")){$("app").classList.add("hidden");$("loginScreen").classList.remove("hidden")}});
+  document.querySelectorAll(".nav button[data-page]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
+
+  function itemRow(item={}){
+    const tr=document.createElement("tr");
+    const options=products.map(p=>`<option value="${escapeHtml(p.id)}" ${item.productId===p.id?"selected":""}>${escapeHtml(p.name)}</option>`).join("");
+    tr.innerHTML=`<td><select class="item-product"><option value="">Choose pizza</option>${options}</select></td>
+      <td><input class="item-qty" type="number" min="1" step="1" value="${item.qty||1}"></td>
+      <td><input class="item-price" type="number" min="0" step="0.01" value="${item.price??""}" placeholder="0.00"></td>
+      <td class="line-total">AED 0.00</td><td><button type="button" class="remove-row" title="Remove">×</button></td>`;
+    const select=tr.querySelector(".item-product"),price=tr.querySelector(".item-price");
+    select.addEventListener("change",()=>{const p=products.find(x=>x.id===select.value);if(p)price.value=p.price;updateTotals()});
+    tr.querySelectorAll("input").forEach(i=>i.addEventListener("input",updateTotals));
+    tr.querySelector(".remove-row").addEventListener("click",()=>{tr.remove();if(!$("invoiceItems").children.length)addItemRow();updateTotals()});
+    if(item.productId)select.value=item.productId;
+    return tr;
+  }
+  function addItemRow(item){$("invoiceItems").appendChild(itemRow(item));updateTotals()}
+  function updateTotals(){
+    let subtotal=0;
+    document.querySelectorAll("#invoiceItems tr").forEach(tr=>{
+      const q=Math.max(0,Number(tr.querySelector(".item-qty").value)||0),p=Math.max(0,Number(tr.querySelector(".item-price").value)||0),line=q*p;
+      tr.querySelector(".line-total").textContent=money(line);subtotal+=line;
+    });
+    const discount=Math.max(0,Number($("discount").value)||0),grand=Math.max(0,subtotal-discount),paid=Math.max(0,Number($("amountPaid").value)||0);
+    $("subtotal").textContent=money(subtotal);$("grandTotal").textContent=money(grand);$("paidDisplay").textContent=money(paid);$("balance").textContent=money(Math.max(0,grand-paid));
+  }
+  function refreshProductOptions(){
+    const rows=[...document.querySelectorAll("#invoiceItems tr")].map(tr=>({productId:tr.querySelector(".item-product").value,qty:tr.querySelector(".item-qty").value,price:tr.querySelector(".item-price").value}));
+    $("invoiceItems").innerHTML="";rows.forEach(r=>addItemRow(r));
+  }
+  $("addItem").addEventListener("click",()=>addItemRow());
+  $("discount").addEventListener("input",updateTotals);$("amountPaid").addEventListener("input",updateTotals);
+  $("customerType").addEventListener("change",()=>{});
+  $("invoiceDate").value=today();$("orderDate").value=today();addItemRow();
+  $("invoiceForm").addEventListener("reset",()=>setTimeout(()=>{$("invoiceDate").value=today();$("orderDate").value=today();$("invoiceItems").innerHTML="";addItemRow();updateTotals()},0));
+  $("invoiceForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    const name=$("customerName").value.trim();if(!name){notify("Please enter a customer name.");return}
+    const items=[...document.querySelectorAll("#invoiceItems tr")].map(tr=>{
+      const select=tr.querySelector(".item-product"),p=products.find(x=>x.id===select.value);
+      return {productId:select.value,name:p?.name||select.options[select.selectedIndex]?.text||"Pizza",qty:Number(tr.querySelector(".item-qty").value)||0,price:Number(tr.querySelector(".item-price").value)||0};
+    }).filter(x=>x.name!=="Pizza"&&x.qty>0);
+    if(!items.length){notify("Please add at least one pizza.");return}
+    const subtotal=items.reduce((s,x)=>s+x.qty*x.price,0),discount=Math.min(subtotal,Math.max(0,Number($("discount").value)||0)),total=subtotal-discount,paid=Math.min(total,Math.max(0,Number($("amountPaid").value)||0));
+    const number="CCP-"+String(Date.now()).slice(-8);
+    const inv={id:number,customerType:$("customerType").value,customer:name,phone:$("customerPhone").value.trim(),email:$("customerEmail").value.trim(),invoiceDate:$("invoiceDate").value,orderDate:$("orderDate").value,paymentMethod:$("paymentMethod").value,items,subtotal,discount,total,paid,balance:total-paid,notes:$("invoiceNotes").value.trim(),createdAt:new Date().toISOString()};
+    invoices.unshift(inv);save();$("invoiceForm").reset();renderDashboard();notify("Invoice "+number+" saved.");go("invoices");
+  });
+  function status(inv){return inv.balance<=0?"Paid":inv.paid>0?"Part-paid":"Unpaid"}
+  function badge(inv){const s=status(inv);return `<span class="badge ${s==="Paid"?"paid":s==="Part-paid"?"partial":"unpaid"}">${s}</span>`}
+  function renderDashboard(){
+    const t=today(),todays=invoices.filter(x=>x.invoiceDate===t),sales=todays.reduce((s,x)=>s+x.total,0),due=invoices.reduce((s,x)=>s+x.balance,0);
+    $("todayOrders").textContent=todays.length;$("todaySales").textContent=money(sales);$("totalInvoices").textContent=invoices.length;$("pendingPayments").textContent=money(due);
+    $("recentInvoices").innerHTML=invoices.length?`<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead><tbody>${invoices.slice(0,5).map(x=>`<tr><td><strong>${escapeHtml(x.id)}</strong></td><td>${escapeHtml(x.customer)}</td><td>${money(x.total)}</td><td>${badge(x)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty"><div class="empty-icon">🧾</div><strong>No invoices yet</strong>Create your first invoice to see it here.</div>`;
+  }
+  function renderInvoices(){
+    const q=($("invoiceSearch").value||"").toLowerCase(),list=invoices.filter(x=>(x.id+" "+x.customer+" "+x.phone).toLowerCase().includes(q));
+    $("invoiceCount").textContent=list.length+" invoice"+(list.length===1?"":"s");
+    $("invoiceTable").innerHTML=list.length?`<div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Customer</th><th>Invoice date</th><th>Total</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead><tbody>${list.map(x=>`<tr><td><strong>${escapeHtml(x.id)}</strong></td><td>${escapeHtml(x.customer)}<br><span class="muted">${escapeHtml(x.customerType)}</span></td><td>${escapeHtml(x.invoiceDate)}</td><td>${money(x.total)}</td><td>${money(x.balance)}</td><td>${badge(x)}</td><td><div class="action-row"><button class="btn btn-light" onclick="printInvoice('${x.id}')">Print</button><button class="btn btn-danger" onclick="deleteInvoice('${x.id}')">Delete</button></div></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty"><div class="empty-icon">📋</div><strong>No invoices found</strong>Try another search or create an invoice.</div>`;
+  }
+  $("invoiceSearch").addEventListener("input",renderInvoices);
+  window.deleteInvoice=id=>{if(confirm("Delete invoice "+id+"? This cannot be undone.")){invoices=invoices.filter(x=>x.id!==id);save();renderInvoices();renderDashboard();renderReports();notify("Invoice deleted.")}};
+  window.printInvoice=id=>{
+    const x=invoices.find(i=>i.id===id);if(!x)return;
+    const print=$("invoice-print-view");
+    print.innerHTML=`<div style="font-family:Arial,sans-serif;color:#222;padding:25px;max-width:800px;margin:auto"><div style="display:flex;justify-content:space-between;border-bottom:3px solid #d62828;padding-bottom:18px"><div style="display:flex;align-items:center;gap:14px"><img src="logo.png" alt="Ceylon Crust Pizza logo" style="width:105px;height:90px;object-fit:contain"><div><h1 style="color:#d62828;margin:0">CEYLON CRUST PIZZA</h1><p>Pizza Business Invoice</p></div></div><div style="text-align:right"><h2>INVOICE</h2><b>${escapeHtml(x.id)}</b><p>${escapeHtml(x.invoiceDate)}</p></div></div><h3>Bill to</h3><p><b>${escapeHtml(x.customer)}</b><br>${escapeHtml(x.customerType)}<br>${escapeHtml(x.phone)}<br>${escapeHtml(x.email)}</p><p>Order / delivery date: ${escapeHtml(x.orderDate)}</p><table style="width:100%;border-collapse:collapse;margin-top:20px"><thead><tr style="background:#fff0e8"><th style="padding:10px;text-align:left">Pizza</th><th>Qty</th><th>Unit price</th><th>Total</th></tr></thead><tbody>${x.items.map(i=>`<tr><td style="padding:10px;border-bottom:1px solid #ddd">${escapeHtml(i.name)}</td><td style="text-align:center">${i.qty}</td><td style="text-align:right">${money(i.price)}</td><td style="text-align:right">${money(i.qty*i.price)}</td></tr>`).join("")}</tbody></table><div style="margin:20px 0 0 auto;max-width:280px"><p>Subtotal: <b style="float:right">${money(x.subtotal)}</b></p><p>Discount: <b style="float:right">${money(x.discount)}</b></p><h2 style="color:#d62828">Total: <span style="float:right">${money(x.total)}</span></h2><p>Paid: <b style="float:right">${money(x.paid)}</b></p><p>Balance: <b style="float:right">${money(x.balance)}</b></p></div><p>Payment method: ${escapeHtml(x.paymentMethod)}</p><p>Notes: ${escapeHtml(x.notes)}</p><hr><p style="text-align:center;color:#777">Thank you for choosing Ceylon Crust Pizza!</p></div>`;
+    // Use the invoice number and customer name as the suggested PDF filename.
+    const previousTitle = document.title;
+    const safeCustomer = (x.customer || "Customer")
+      .normalize("NFKD")
+      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9 _-]/g, "")
+      .trim()
+      .replace(/\\s+/g, "_")
+      .slice(0, 50) || "Customer";
+    document.title = `${x.id}_${safeCustomer}`;
+
+    print.classList.add("active");
+    const restorePrintState = () => {
+      print.classList.remove("active");
+      document.title = previousTitle;
+      window.removeEventListener("afterprint", restorePrintState);
+    };
+    window.addEventListener("afterprint", restorePrintState);
+    window.print();
+    // Fallback for browsers that do not fire afterprint reliably.
+    setTimeout(restorePrintState, 2000);
+  };
+  function renderCustomers(){
+    const map=new Map();invoices.forEach(x=>{const key=(x.customer+"|"+x.phone).toLowerCase();if(!map.has(key))map.set(key,{...x,count:0,total:0});const c=map.get(key);c.count++;c.total+=x.total});
+    const q=($("customerSearch").value||"").toLowerCase(),list=[...map.values()].filter(x=>(x.customer+" "+x.phone+" "+x.customerType).toLowerCase().includes(q));
+    $("customerCount").textContent=list.length+" customers";
+    $("customerTable").innerHTML=list.length?`<div class="table-wrap"><table><thead><tr><th>Name</th><th>Type</th><th>Phone</th><th>Email</th><th>Invoices</th><th>Total purchases</th></tr></thead><tbody>${list.map(x=>`<tr><td><strong>${escapeHtml(x.customer)}</strong></td><td>${escapeHtml(x.customerType)}</td><td>${escapeHtml(x.phone||"—")}</td><td>${escapeHtml(x.email||"—")}</td><td>${x.count}</td><td>${money(x.total)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty"><div class="empty-icon">♙</div><strong>No customer records yet</strong>Customers are added when you save invoices.</div>`;
+  }
+  $("customerSearch").addEventListener("input",renderCustomers);
+  function renderProducts(){
+    $("productGrid").innerHTML=products.length?products.map(p=>`<div class="product-card"><div class="pizza-emoji">🍕</div><h3>${escapeHtml(p.name)}</h3><p>Default selling price</p><strong>${money(p.price)}</strong><div class="action-row" style="margin-top:13px"><button class="btn btn-light" onclick="editProduct('${p.id}')">Edit</button><button class="btn btn-danger" onclick="removeProduct('${p.id}')">Remove</button></div></div>`).join(""):`<div class="card empty"><div class="empty-icon">🍕</div><strong>No pizzas added</strong>Add a pizza flavour to begin.</div>`;
+  }
+  $("addProductButton").addEventListener("click",()=>productPrompt());
+  function productPrompt(existing){
+    const name=prompt(existing?"Edit pizza name:":"Enter pizza flavour name:",existing?.name||"");if(name===null)return;
+    const clean=name.trim();if(!clean){notify("Pizza name cannot be empty.");return}
+    const raw=prompt("Default price in AED:",existing?existing.price:"");if(raw===null)return;
+    const price=Number(raw);if(!Number.isFinite(price)||price<0){notify("Enter a valid price.");return}
+    if(existing){existing.name=clean;existing.price=price}else products.push({id:"p"+Date.now(),name:clean,price});
+    save();renderProducts();refreshProductOptions();notify("Pizza menu updated.");
+  }
+  window.editProduct=id=>{const p=products.find(x=>x.id===id);if(p)productPrompt(p)};
+  window.removeProduct=id=>{const p=products.find(x=>x.id===id);if(p&&confirm("Remove "+p.name+" from the pizza menu?")){products=products.filter(x=>x.id!==id);save();renderProducts();refreshProductOptions();notify("Pizza removed.")}};
+  function renderReports(){
+    const total=invoices.reduce((s,x)=>s+x.total,0),paid=invoices.reduce((s,x)=>s+x.paid,0),due=invoices.reduce((s,x)=>s+x.balance,0);
+    $("reportSales").textContent=money(total);$("reportPaid").textContent=money(paid);$("reportDue").textContent=money(due);
+    $("reportSummary").textContent=invoices.length?`${invoices.length} invoice(s) recorded. ${invoices.filter(x=>x.balance<=0).length} paid, ${invoices.filter(x=>x.paid>0&&x.balance>0).length} part-paid, and ${invoices.filter(x=>x.paid<=0&&x.balance>0).length} unpaid.`:"No invoices yet.";
+  }
+  $("exportCsv").addEventListener("click",()=>{
+    const rows=[["Invoice","Customer","Type","Phone","Invoice Date","Order Date","Subtotal","Discount","Total","Paid","Balance","Status"],...invoices.map(x=>[x.id,x.customer,x.customerType,x.phone,x.invoiceDate,x.orderDate,x.subtotal,x.discount,x.total,x.paid,x.balance,status(x)])];
+    const csv=rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\n");
+    download("ceylon-crust-invoices.csv","text/csv;charset=utf-8",csv);
+  });
+  function download(filename,type,content){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url)}
+  $("backupButton").addEventListener("click",()=>download("ceylon-crust-backup.json","application/json",JSON.stringify({invoices,products,backupDate:new Date().toISOString()},null,2)));
+  $("restoreFile").addEventListener("change",async e=>{
+    const file=e.target.files[0];if(!file)return;
+    try{const data=JSON.parse(await file.text());if(!Array.isArray(data.invoices)||!Array.isArray(data.products))throw new Error("Invalid backup");if(!confirm("Replace current invoices and pizza menu with this backup?"))return;invoices=data.invoices;products=data.products;save();renderDashboard();notify("Backup restored.");}
+    catch{notify("Could not restore this backup file.")}finally{e.target.value=""}
+  });
+  renderProducts();renderDashboard();
+})();
+</script>
+</body>
+</html>
