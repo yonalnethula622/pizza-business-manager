@@ -1,1 +1,200 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Ceylon Crust Pizza | Business Manager</title>
+
+    <meta name="theme-color" content="#d62828">
+    <meta name="description" content="Ceylon Crust Pizza Business Management System">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-card">
+
+        <div class="brand-icon">🍕</div>
+
+        <h1>CEYLON CRUST</h1>
+        <h2>PIZZA</h2>
+
+        <p>Business Management System</p>
+
+        <form id="loginForm">
+
+            <label>Worker Password</label>
+
+            <input
+                type="password"
+                id="passwordInput"
+                placeholder="Enter your password"
+                required
+            >
+
+            <button type="submit" class="login-button">
+                LOGIN →
+            </button>
+
+            <p id="loginError" class="error-message"></p>
+
+        </form>
+
+        <div class="login-footer">
+            CEYLON CRUST PIZZA © 2026
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MAIN APPLICATION -->
+
+<div id="app" class="app-container hidden">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="sidebar-logo">🍕</div>
+
+            <div>
+                <h2>CEYLON CRUST</h2>
+                <span>PIZZA MANAGER</span>
+            </div>
+
+        </div>
+
+
+        <div class="sidebar-section">
+            MAIN MENU
+        </div>
+
+
+        <nav class="navigation">
+
+            <button class="nav-item active" data-page="dashboard">
+                <span>▦</span>
+                Dashboard
+            </button>
+
+            <button class="nav-item" data-page="create-invoice">
+                <span>＋</span>
+                Create Invoice
+            </button>
+
+            <button class="nav-item" data-page="invoices">
+                <span>▤</span>
+                All Invoices
+            </button>
+
+            <button class="nav-item" data-page="customers">
+                <span>♙</span>
+                Customers
+            </button>
+
+            <button class="nav-item" data-page="products">
+                <span>🍕</span>
+                Pizza & Pricing
+            </button>
+
+            <button class="nav-item" data-page="reports">
+                <span>▥</span>
+                Sales Reports
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button class="nav-item" data-page="settings">
+                <span>⚙</span>
+                Settings
+            </button>
+
+            <button id="logoutButton" class="nav-item logout-button">
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h2 id="pageTitle">Dashboard</h2>
+                <p id="currentDate"></p>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="status-indicator"></div>
+
+                <span>Business Manager</span>
+
+                <div class="profile-icon">CC</div>
+
+            </div>
+
+        </header>
+
+
+        <div class="page-content">
+
+
+            <!-- DASHBOARD -->
+
+            <section id="dashboard" class="page active-page">
+
+                <div class="welcome-section">
+
+                    <div>
+                        <h1>Welcome Back! 👋</h1>
+
+                        <p>
+                            Here's what's happening with your pizza business today.
+                        </p>
+                    </div>
+
+                    <button class="primary-button" onclick="navigateTo('create-invoice')">
+                        + Create Invoice
+                    </button>
+
+                </div>
+
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon red">▤</div>
+
+                        <p>Today's Orders</p>
+
+                        <h2 id="todayOrders">0</h2>
+
+                        <span>Orders
